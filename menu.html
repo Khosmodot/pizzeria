@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es" data-layout="horizontal" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg"
+    data-sidebar-image="none">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Menu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Ícono de la página -->
+    <link rel="shortcut icon" href="assets/images/pizza.png">
+    <!-- Bootstrap Css -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="assets/css/stylesheet.css">
+
+    <style> body { display: none; } </style>
+    <script src="assets/js/toastr.js"></script>
+    <!-- <script src="assets/js/funciones.js"></script> -->
+    <script type="module">
+        import { verificarSesion } from '/pizzeria/assets/js/funciones.js';
+        verificarSesion();
+    </script>
+</head>
+
+<body>
+    
+
+
+    <!-- ========== Header ========== -->
+    <div id="header-container"></div>
+
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class="main-content">
+
+        <div class="page-content">
+            <div class="container-fluid">
+
+
+            </div>
+            <!-- container-fluid -->
+        </div>
+        <!-- End Page-content -->
+
+
+    </div>
+    <!-- end main content-->
+
+    
+    <script src="assets/js/jquery-3.7.1.js"></script>
+    <!-- Script personalizado para cargar el header -->
+    <script type="module" src="/pizzeria/assets/js/header.js"></script>
+    
+</body>

@@ -1,0 +1,15 @@
+body{
+    background-image: url(../images/layered-peaks-haikei.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+/* input:hover{
+    border-color: #0b5ed7;
+} */
+/* Quitar el hover de los botones del paginador de DataTables 1.13 */
+/* .dataTables_wrapper .dataTables_paginate .paginate_button:not(.current):hover {
+    background-color: transparent !important;
+    border: none !important; 
+} */
+
+

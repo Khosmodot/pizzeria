@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizzeria</title>
+
+    <!-- Ícono de la página -->
+    <link rel="shortcut icon" href="assets/images/pizza.png">
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="assets/libs/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/stylesheet.css">
+    <link rel="stylesheet" href="assets/css/toastr.css">
+    <link rel="stylesheet" href="assets/libs/sweetalert2/sweetalert2.min.css">
+
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="card shadow" style="max-width: 420px; width: 100%;">
+                <h1 class="card-header text-center">
+                    Inicio de Sesión
+                </h1>
+                <img src="assets/images/pizza.jpg" class="img-fluid mx-auto d-block my-1"
+                    style="max-height: 210px; width: auto;">
+                <div class="card-body">
+                    <form id="formAcceso" class="needs-validation" novalidate>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="loginname" name="loginname"
+                                placeholder="Usuario" required>
+                            <label for="loginname" class="form-label">Usuario</label>
+                            <div class="invalid-feedback">
+                                Por favor ingrese un nombre de Usuario.
+                            </div>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="password" name="password"
+                                placeholder="Contraseña" required>
+                            <label for="password" class="form-label">Contraseña</label>
+                            <div class="invalid-feedback">
+                                Por favor ingrese una Contraseña
+                            </div>
+                        </div>
+                        <div class="form-group d-grid">
+                            <button type="submit" id="botonIngresar" class="btn btn-lg btn-primary">
+                                Ingresar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/jquery-3.7.1.js"></script> <!-- jQuery necesario para AJAX -->
+    <script src="assets/libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            localStorage.usuariologueado = "0";
+
+            // Mostrar mensaje si viene de redirección
+            if (localStorage.getItem("mensajeSesionInvalida") === "1") {
+                Swal.fire({
+                    title: "Acceso Denegado",
+                    text: "Usuario no logueado.",
+                    icon: "error" //question, error, info, warning, success
+                });
+                localStorage.removeItem("mensajeSesionInvalida"); // Limpiar para que no aparezca siempre
+            }
+        });
+    </script>
+
+    <script type="module">
+        import { configurarValidacionFormularioLogin, validarAccesoUsuario } from '/pizzeria/assets/js/auth.js';
+
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Manejo del evento submit del formulario
+            configurarValidacionFormularioLogin('formAcceso');
+            // Configuración de eventos de teclado
+            // siguienteCampo("#loginname", "#password", false);
+            // siguienteCampo("#password", "#botonIngresar", false);
+        });
+    </script>
+</body>
+
+</html>
