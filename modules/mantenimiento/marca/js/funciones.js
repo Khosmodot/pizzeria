@@ -1,4 +1,4 @@
-import { validarFormulario, cargarGrillaMantenimiento, insertarRegistro, modificarRegistro, eliminarRegistro, obtenerRegistro } from '/pizzeria/assets/js/funciones.js';
+import { validarFormulario, cargarGrillaMantenimiento, agregarRegistro, modificarRegistro, eliminarRegistro, obtenerRegistro } from '/pizzeria/assets/js/funciones.js';
 
 // Configuración de la grilla
 export const actualizarGrilla = () => {
@@ -59,7 +59,7 @@ export const agregar = async () => {
     const campos = ['nombre'];
     const valores = [nombreMarca];
 
-    const resultado = await insertarRegistro(tabla, campos, valores);
+    const resultado = await agregarRegistro(tabla, campos, valores);
 
     if (resultado.operacion === "true") {
         mostrarMensajeExito("Marca registrada correctamente");

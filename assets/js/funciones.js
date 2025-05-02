@@ -1,28 +1,3 @@
-// toastr.options = {
-//     "closeButton": true,
-//     "positionClass": "toast-bottom-full-width",
-//     "preventDuplicates": true,
-//     "onclick": null,
-//     "showDuration": "300",
-//     "hideDuration": "1000",
-//     "timeOut": "10000",
-//     "extendedTimeOut": "1000",
-//     "showEasing": "swing",
-//     "hideEasing": "linear",
-//     "showMethod": "show",
-//     "hideMethod": "fadeOut"
-// };
-
-
-
-
-
-
-
-
-
-
-
 
 export const verificarSesion = () => {
     const isLoggedIn = localStorage.getItem("usuariologueado");
@@ -36,12 +11,6 @@ export const verificarSesion = () => {
     }
 };
 
-// export function cerrarSesion() {
-//     localStorage.usuariologueado = "0";
-//     localStorage.clear(); // si usás localStorage
-//     sessionStorage.clear(); // si usás sessionStorage
-//     location.href = "index.html";
-// }
 
 export const cerrarSesion = () => {
     // Limpiar datos de sesión
@@ -138,14 +107,15 @@ export const obtenerRegistro = async (tabla, columnaId, valorId) => {
     }
 };
 
-// funcion modular para eliminar registro
-export const eliminarRegistro = async (tabla, columnaId, valorId) => {
+
+// funcion modular para agregar registro
+export const agregarRegistro = async (tabla, campos, valores) => {
     try {
         const formData = new FormData();
-        formData.append('accion', 'eliminar');
+        formData.append('accion', 'insertar');
         formData.append('tabla', tabla);
-        formData.append('columnaId', columnaId);
-        formData.append('valorId', valorId);
+        formData.append('campos', campos.join(','));
+        formData.append('valores', valores.join(','));
 
         const response = await fetch('/pizzeria/servicios/servicios.php', {
             method: 'POST',
@@ -153,11 +123,11 @@ export const eliminarRegistro = async (tabla, columnaId, valorId) => {
         });
 
         const resultado = await response.json();
-        console.log('Resultado de la eliminación:', resultado);
+        console.log('Resultado de la inserción:', resultado);
         return resultado;
 
     } catch (error) {
-        console.error("Error al eliminar registro:", error);
+        console.error("Error al insertar registro:", error);
         return { operacion: "false", mensaje: "Error de red o servidor." };
     }
 };
@@ -189,13 +159,14 @@ export const modificarRegistro = async (tabla, columnaId, valorId, campos, valor
 };
 
 
-export const insertarRegistro = async (tabla, campos, valores) => {
+// funcion modular para eliminar registro
+export const eliminarRegistro = async (tabla, columnaId, valorId) => {
     try {
         const formData = new FormData();
-        formData.append('accion', 'insertar');
+        formData.append('accion', 'eliminar');
         formData.append('tabla', tabla);
-        formData.append('campos', campos.join(','));
-        formData.append('valores', valores.join(','));
+        formData.append('columnaId', columnaId);
+        formData.append('valorId', valorId);
 
         const response = await fetch('/pizzeria/servicios/servicios.php', {
             method: 'POST',
@@ -203,16 +174,14 @@ export const insertarRegistro = async (tabla, campos, valores) => {
         });
 
         const resultado = await response.json();
-        console.log('Resultado de la inserción:', resultado);
+        console.log('Resultado de la eliminación:', resultado);
         return resultado;
 
     } catch (error) {
-        console.error("Error al insertar registro:", error);
+        console.error("Error al eliminar registro:", error);
         return { operacion: "false", mensaje: "Error de red o servidor." };
     }
 };
-
-
 
 
 
@@ -254,7 +223,6 @@ export const cargarGrillaMantenimiento = (idTablaHtml, tablaBD, columnasDB, colu
             },
             error: function (xhr, error, thrown) {
                 console.error("Error en AJAX:", xhr.responseText);
-                toastr.error("Error al cargar los datos. Por favor, intente nuevamente.");
             }
         },
         columns: columnasMostrar.map(col => ({
