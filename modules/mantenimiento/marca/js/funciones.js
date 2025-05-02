@@ -63,8 +63,8 @@ export const agregar = async () => {
 
     if (resultado.operacion === "true") {
         mostrarMensajeExito("Marca registrada correctamente");
-        cerrarModal('staticBackdropAgregar');
         limpiarFormulario(formId);
+        cerrarModal('staticBackdropAgregar');
         actualizarGrilla();
     } else {
         mostrarMensajeError(resultado.mensaje || "Error al registrar la marca");
