@@ -1,15 +1,25 @@
-body{
+body {
     background-image: url(../images/layered-peaks-haikei.png);
     background-repeat: no-repeat;
     background-size: cover;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Asegura que el body ocupe toda la pantalla */
+    padding-top: 56px; /* Ajusta según la altura del header */
+    margin: 0;
 }
-/* input:hover{
-    border-color: #0b5ed7;
-} */
-/* Quitar el hover de los botones del paginador de DataTables 1.13 */
-/* .dataTables_wrapper .dataTables_paginate .paginate_button:not(.current):hover {
-    background-color: transparent !important;
-    border: none !important; 
-} */
+
+
+
+/* Centrar el contenido y limitar el ancho */
+.main-content {
+    max-width: 1200px; /* Ajusta el ancho máximo según tus necesidades */
+    margin: 0 auto; /* Centrar horizontalmente */
+    padding: 20px; /* Espaciado interno */
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* Hace que el contenido principal ocupe el espacio restante */
+    /* justify-content: center; Centrar verticalmente */
+}
 
 

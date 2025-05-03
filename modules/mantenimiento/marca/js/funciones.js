@@ -1,211 +1,168 @@
-import { validarFormulario, cargarGrillaMantenimiento, agregarRegistro, modificarRegistro, eliminarRegistro, obtenerRegistro } from '/pizzeria/assets/js/funciones.js';
+import { validarFormulario,
+    cargarGrillaMantenimiento,
+    agregarRegistro,
+    modificarRegistro,
+    eliminarRegistro,
+    obtenerRegistro,
+    obtenerIdFilaSeleccionada,
+    abrirModal,
+    cerrarModal,
+    limpiarFormulario,
+    mostrarMensajeExito,
+    mostrarMensajeError,
+    mostrarMensajeAdvertencia } from '/pizzeria/assets/js/funciones.js';
 
-// Configuración de la grilla
+// Configuración específica de variables del módulo
+const CONFIG_VAR = {
+    tablaId: 'marca', // Nombre de la tabla en la base de datos
+    columnaIdBD: 'id_marca', // Nombre de la columna que contiene el ID en la base de datos
+    grillaId: 'marca-grid', // ID de la grilla en el HTML
+    columnaIdGrilla: 'id_marca', // Nombre de la columna que contiene el ID en la grilla
+};
+
+// Configuración y carga/actualizacion de la grilla
 export const actualizarGrilla = () => {
     $(document).ready(function () {
+        // Configuración de columnas de la tabla de la base de datos
         const columnasDB = ['id_marca', 'nombre'];
+        // Configuración de columnas a mostrar en la grilla
         const columnasMostrar = [
-            { name: 'id_marca', db: 'id_marca', searchable: true, visible: true },
+            { name: 'id_marca', db: 'id_marca', searchable: false, visible: false },
             { name: 'nombre', db: 'nombre', searchable: true, visible: true }
         ];
+        // Configuración de join (si es necesario)
         const join = '';
-        cargarGrillaMantenimiento('marca-grid', 'marca', columnasDB, columnasMostrar, join);
+        // Cargar la grilla de mantenimiento
+        cargarGrillaMantenimiento(CONFIG_VAR.grillaId, CONFIG_VAR.tablaId, columnasDB, columnasMostrar, join);
     });
 };
 
-
+// Funcion para verificar y abrir el modal de eliminar
 export const abrirModalEliminar = async () => {
-    const id = obtenerIdFilaSeleccionada();
-
+    const id = obtenerIdFilaSeleccionada(CONFIG_VAR.grillaId, CONFIG_VAR.columnaIdGrilla); // Obtener el ID de la fila seleccionada
+    // Si no hay fila seleccionada, mostrar mensaje de advertencia y detener la ejecución
     if (!id) {
         mostrarMensajeAdvertencia("Debe seleccionar una fila antes de eliminar.");
         return;
-    }
+    }    
 
-    const datos = await obtenerDatos(id);
+    const datos = await obtenerRegistro(CONFIG_VAR.tablaId, CONFIG_VAR.columnaIdBD, id);  //Obtener el registro de la base de datos por ID
 
-    if (datos) {
-        cargarDatosEnModalEliminar(datos);
+    // Si la operación fue exitosa, cargar los datos en el modal de eliminar y abrir el modal
+    if (datos.exito) {
+        cargarDatosEnModalEliminar(datos.data);
         abrirModal('staticBackdropEliminar');
+    } else { // Si hubo un error al obtener el registro, mostrar mensaje de error
+        mostrarMensajeError(datos.mensaje || "Error al obtener el registro");
     }
 };
 
+// Funcion para verificar y abrir el modal de modificar
 export const abrirModalModificar = async () => {
-    const id = obtenerIdFilaSeleccionada();
-
+    const id = obtenerIdFilaSeleccionada(CONFIG_VAR.grillaId, CONFIG_VAR.columnaIdGrilla); // Obtener el ID de la fila seleccionada
+    // Si no hay fila seleccionada, mostrar mensaje de advertencia y detener la ejecución
     if (!id) {
         mostrarMensajeAdvertencia("Debe seleccionar una fila antes de modificar.");
         return;
     }
 
-    const datos = await obtenerDatos(id);
+    const datos = await obtenerRegistro(CONFIG_VAR.tablaId, CONFIG_VAR.columnaIdBD, id);  //Obtener el registro de la base de datos por ID
 
-    if (datos) {
-        cargarDatosEnModalModificar(datos);
+    // Si la operación fue exitosa, cargar los datos en el modal de modificar y abrir el modal
+    if (datos.exito) {
+        cargarDatosEnModalModificar(datos.data);
         abrirModal('staticBackdropModificar');
+    } else { // Si hubo un error al obtener el registro, mostrar mensaje de error
+        mostrarMensajeError(datos.mensaje || "Error al obtener el registro");
     }
 };
 
+// Agregar registro
 export const agregar = async () => {
-    const formId = 'formAgregar';
+    const formId = 'formAgregar';   // ID del formulario de agregar
 
-    // Validar el formulario con Bootstrap
+    // Validar el formulario con validaciones de Bootstrap
     if (!validarFormulario(formId)) {
         return; // Detener si el formulario no es válido
     }
-
+    // Obtener los valorres de los campos y eliminar espacios en blanco
     const nombreMarca = document.getElementById('nombreMarcaAgregar').value.trim();
-    const tabla = 'marca';
-    const campos = ['nombre'];
-    const valores = [nombreMarca];
+    // Campos de la tabla en la base de datos
+    const campos = ['nombre']; 
+    // Valores a insertar en la base de datos
+    const valores = [nombreMarca];  
 
-    const resultado = await agregarRegistro(tabla, campos, valores);
-
+    const resultado = await agregarRegistro(CONFIG_VAR.tablaId, campos, valores); // Llamar a la función para agregar el registro a la base de datos
+    // Si la operación fue exitosa, mostrar mensaje de éxito y cerrar el modal
     if (resultado.operacion === "true") {
         mostrarMensajeExito("Marca registrada correctamente");
-        limpiarFormulario(formId);
         cerrarModal('staticBackdropAgregar');
+        limpiarFormulario(formId);
         actualizarGrilla();
-    } else {
+    } else { // Si hubo un error al agregar el registro, mostrar mensaje de error
         mostrarMensajeError(resultado.mensaje || "Error al registrar la marca");
     }
 };
 
-
-//modificar registro
+// Modificar registro
 export const modificar = async () => {
-    const formId = 'formModificar';
+    const formId = 'formModificar'; // ID del formulario de modificar
 
-    // Validar el formulario con Bootstrap
+    // Validar el formulario con validaciones de Bootstrap
     if (!validarFormulario(formId)) {
         return; // Detener si el formulario no es válido
     }
 
-    const id = obtenerIdFilaSeleccionada();
+    const id = obtenerIdFilaSeleccionada(CONFIG_VAR.grillaId, CONFIG_VAR.columnaIdGrilla); // Obtener el ID de la fila seleccionada
 
-    if (!id) {
+    if (!id) { // Si no hay fila seleccionada, mostrar mensaje de error y detener la ejecución
         mostrarMensajeError("No se pudo obtener el ID del registro a modificar.");
         return;
     }
-
+    // Obtener los valores de los campos y eliminar espacios en blanco
     const nombreMarca = document.getElementById('nombreMarcaModificar').value.trim();
-    const tabla = 'marca';
-    const columnaId = 'id_marca';
-    const campos = ['nombre'];
-    const valores = [nombreMarca];
+    
+    const campos = ['nombre']; // Campos de la tabla en la base de datos
+    const valores = [nombreMarca]; // Valores a modificar en la base de datos
 
-    const resultado = await modificarRegistro(tabla, columnaId, id, campos, valores);
+    const resultado = await modificarRegistro(CONFIG_VAR.tablaId, CONFIG_VAR.columnaIdBD, id, campos, valores);
 
-    if (resultado.operacion === "true") {
+    if (resultado.operacion === "true") { // Si la operación fue exitosa, mostrar mensaje de éxito y cerrar el modal
         mostrarMensajeExito("Marca modificada correctamente");
         cerrarModal('staticBackdropModificar');
         actualizarGrilla();
-    } else {
+    } else { // Si hubo un error al modificar el registro, mostrar mensaje de error
         mostrarMensajeError(resultado.mensaje || "Error al modificar la marca");
     }
 };
 
-// Eliminación de un registro
+// Eliminar registro
 export const eliminar = async () => {
-    const id = obtenerIdFilaSeleccionada();
+    const id = obtenerIdFilaSeleccionada(CONFIG_VAR.grillaId, CONFIG_VAR.columnaIdGrilla); // Obtener el ID de la fila seleccionada
 
-    if (!id) {
+    if (!id) { // Si no se encontró el ID, mostrar mensaje de error y detener la ejecución
         mostrarMensajeError("No se pudo obtener el ID del registro a eliminar.");
         return;
     }
 
-    const tabla = 'marca';
-    const columnaId = 'id_marca';
+    
+    const resultado = await eliminarRegistro(CONFIG_VAR.tablaId, CONFIG_VAR.columnaIdBD, id); // Llamar a la función para eliminar el registro de la base de datos
 
-    const resultado = await eliminarRegistro(tabla, columnaId, id);
-
-    if (resultado.operacion === "true") {
+    if (resultado.operacion === "true") { // Si la operación fue exitosa, mostrar mensaje de éxito y cerrar el modal
         mostrarMensajeExito("Marca eliminada correctamente");
         cerrarModal('staticBackdropEliminar');
         actualizarGrilla();
-    } else {
+    } else { // Si hubo un error al eliminar el registro, mostrar mensaje de error
         mostrarMensajeError(resultado.mensaje || "Error al eliminar la marca");
     }
 };
 
-
-// Obtención de datos de un registro con ID específico
-export const obtenerDatos = async (id) => {
-    const tabla = 'marca';
-    const columnaId = 'id_marca';
-
-    const resultado = await obtenerRegistro(tabla, columnaId, id);
-
-    if (resultado.exito) {
-        return resultado.data;
-    } else {
-        mostrarMensajeError(resultado.mensaje || "Error al obtener el registro");
-        return null;
-    }
-};
-
-
-
-
-// Utilidades
-const obtenerIdFilaSeleccionada = () => {
-    const tabla = $('#marca-grid').DataTable();
-    const filaSeleccionada = tabla.row({ selected: true });
-
-    if (!filaSeleccionada.any()) {
-        return null;
-    }
-
-    const datosFila = filaSeleccionada.data();
-    return datosFila.id_marca;
-};
-
-const mostrarMensajeExito = (mensaje) => {
-    swal.fire({
-        title: mensaje,
-        icon: "success",
-        timer: 2000,
-        showConfirmButton: false
-    });
-};
-
-const mostrarMensajeError = (mensaje) => {
-    swal.fire({
-        title: "Error",
-        text: mensaje,
-        icon: "error",
-        confirmButtonText: "Aceptar"
-    });
-};
-
-const mostrarMensajeAdvertencia = (mensaje) => {
-    swal.fire({
-        title: "Atención",
-        text: mensaje,
-        icon: "warning",
-        confirmButtonText: "Aceptar"
-    });
-};
-
-const abrirModal = (modalId) => {
-    const modal = new bootstrap.Modal(document.getElementById(modalId));
-    modal.show();
-};
-
-const cerrarModal = (modalId) => {
-    const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
-    modal.hide();
-    
-};
-
-const limpiarFormulario = (formId) => {
-    document.getElementById(formId).reset();
-};
-
+// Cargar datos en el modal de eliminar
 const cargarDatosEnModalEliminar = (datos) => {
     document.getElementById('nombreMarcaEliminar').value = datos.nombre;
 };
 
+// Cargar datos en el modal de modificar
 const cargarDatosEnModalModificar = (datos) => {
     document.getElementById('nombreMarcaModificar').value = datos.nombre;
 };

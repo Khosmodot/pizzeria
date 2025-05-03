@@ -1,16 +1,6 @@
 import { cerrarSesion } from '/pizzeria/assets/js/funciones.js';
 
-const savedTheme = localStorage.getItem('data-bs-theme');
-if (savedTheme) {
-    document.documentElement.setAttribute('data-bs-theme', savedTheme);
-} else {
-    // Si no hay un valor, establecer uno por defecto (opcional)
-    document.documentElement.setAttribute('data-bs-theme', 'light');
-}
-
-
 // Cargar el header
-
 fetch('/pizzeria/includes/header.html')
     .then(res => res.text())
     .then(data => {
@@ -31,20 +21,12 @@ fetch('/pizzeria/includes/header.html')
 
         // Función para cargar scripts en orden
         const loadScriptsSequentially = (scripts, index = 0) => {
-            if (index >= scripts.length) {
-                // Ejecutar funciones necesarias después de que todos los scripts hayan cargado
-                if (typeof feather !== 'undefined') {
-                    feather.replace();
-                }
-                return;
-            }
+            if (index >= scripts.length) return;
 
             const oldScript = scripts[index];
             const newScript = document.createElement('script');
             if (oldScript.src) {
                 newScript.src = oldScript.src;
-                // Hace que el script sea tratado como un módulo
-                // Verificar si el script debe ser tratado como un módulo
                 if (oldScript.type === 'module') {
                     newScript.type = 'module';
                 }
@@ -62,34 +44,46 @@ fetch('/pizzeria/includes/header.html')
 
         loadScriptsSequentially(Array.from(scripts));
 
-        // Agregar evento al botón de modo oscuro, luego de que se inserta el header
-        const observer = new MutationObserver(() => {
-            const darkModeBtn = document.querySelector('.light-dark-mode');
-            if (darkModeBtn) {
-                darkModeBtn.addEventListener('click', () => {
-                    const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                    document.documentElement.setAttribute('data-bs-theme', newTheme);
-                    localStorage.setItem('data-bs-theme', newTheme);
-                });
-                observer.disconnect(); // Detener observación una vez encontrado
-            }
-        });
-
-
         // Asignar el evento click al enlace de cerrar sesión
         const cerrarSesionLink = document.getElementById('cerrarSesionLink');
         if (cerrarSesionLink) {
             cerrarSesionLink.addEventListener('click', function (event) {
-                event.preventDefault(); // Prevenir el comportamiento por defecto del enlace
-                cerrarSesion(); // Llamar a la función importada
+                event.preventDefault();
+                cerrarSesion();
             });
         }
 
-        observer.observe(document.getElementById('header-container'), { childList: true, subtree: true });
+        // Agregar eventos de "hover" para los menús desplegables (solo en pantallas grandes)
+        const dropdowns = document.querySelectorAll('.nav-item.dropdown');
 
+        dropdowns.forEach(dropdown => {
+            const toggle = dropdown.querySelector('.dropdown-toggle');
+            const menu = dropdown.querySelector('.dropdown-menu');
 
+            // Mostrar el menú al pasar el mouse (solo en pantallas grandes)
+            dropdown.addEventListener('mouseenter', () => {
+                if (window.innerWidth > 991) {
+                    menu.classList.add('show');
+                    toggle.setAttribute('aria-expanded', 'true');
+                }
+            });
 
+            // Ocultar el menú al quitar el mouse (solo en pantallas grandes)
+            dropdown.addEventListener('mouseleave', () => {
+                if (window.innerWidth > 991) {
+                    menu.classList.remove('show');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+
+        // Evitar que el menú de usuario se cierre al hacer clic en áreas no interactivas
+        const userDropdownMenu = document.querySelector('#userDropdown + .dropdown-menu');
+        if (userDropdownMenu) {
+            userDropdownMenu.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
+        }
     })
     .catch(err => {
         console.error('Error cargando header:', err);

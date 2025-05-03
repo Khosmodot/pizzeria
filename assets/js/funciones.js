@@ -1,17 +1,20 @@
+// Funciones Generales de JavaScript para la aplicación de Pizzería
 
+// Función para verificar si el usuario está logueado
 export const verificarSesion = () => {
-    const isLoggedIn = localStorage.getItem("usuariologueado");
-    if (!isLoggedIn || isLoggedIn !== "1") {
-        localStorage.setItem("mensajeSesionInvalida", "1"); // Guardamos la intención del mensaje
-        window.location.href = "/pizzeria/index.html";
-    } else {
-        document.addEventListener("DOMContentLoaded", () => {
-            document.body.style.display = "block";
+    const isLoggedIn = localStorage.getItem("usuariologueado"); // Obtener el estado de sesión del localStorage
+    if (!isLoggedIn || isLoggedIn !== "1") { // Si no está logueado
+        localStorage.setItem("mensajeSesionInvalida", "1"); // Guardamos la intención del mensaje para mostrarlo en el login
+        window.location.href = "/pizzeria/index.html"; // Redirigir al inicio de sesión
+    } else { // Si está logueado
+        // Mostrar el contenido del body después de que se haya cargado el DOM
+        document.addEventListener("DOMContentLoaded", () => { // Esperar a que el DOM esté completamente cargado
+            document.body.style.display = "block"; // Mostrar el body
         });
     }
 };
 
-
+// Función para cerrar sesión
 export const cerrarSesion = () => {
     // Limpiar datos de sesión
     localStorage.clear();
@@ -21,21 +24,20 @@ export const cerrarSesion = () => {
     location.href = "/pizzeria/index.html";
 };
 
-
-
+// Función modular para validar formularios con Bootstrap
 export const validarFormulario = (formId) => {
-    const form = document.getElementById(formId);
+    const form = document.getElementById(formId); // Obtener el formulario por su ID
 
-    if (!form) {
-        console.error(`Formulario con ID "${formId}" no encontrado.`);
+    if (!form) { // Si el formulario no existe, mostrar un mensaje de error para depuración
+        console.error(`Formulario con ID "${formId}" no encontrado.`); // Mostrar error en consola
         return false;
     }
 
-    const inputs = form.querySelectorAll('input, select, textarea');
-    let isValid = true;
-    let firstInvalidField = null;
+    const inputs = form.querySelectorAll('input, select, textarea'); // Obtener todos los campos de entrada del formulario
+    let isValid = true; // Variable para verificar si el formulario es válido
+    let firstInvalidField = null; // Variable para almacenar el primer campo no válido para hacer focus
 
-    inputs.forEach(input => {
+    inputs.forEach(input => { // Iterar sobre cada campo de entrada
         // Validar el campo
         if (!input.checkValidity()) {
             isValid = false;
@@ -48,13 +50,13 @@ export const validarFormulario = (formId) => {
                 firstInvalidField = input;
             }
         } else {
-            // Si es válido, eliminar las clases de error
+            // Si es válido, eliminar las clases de error y agregar la clase de éxito
             input.classList.remove('is-invalid');
             input.classList.add('is-valid');
         }
 
         // Agregar evento para validar dinámicamente mientras el usuario escribe
-        input.addEventListener('input', function () {
+        input.addEventListener('input', function () { 
             if (input.checkValidity()) {
                 input.classList.remove('is-invalid');
                 input.classList.add('is-valid');
@@ -76,22 +78,22 @@ export const validarFormulario = (formId) => {
     return isValid;
 };
 
-
+// Función modular para obtener el registro de la base de datos
 export const obtenerRegistro = async (tabla, columnaId, valorId) => {
     try {
-        const formData = new FormData();
-        formData.append('accion', 'obtenerRegistro');
-        formData.append('tabla', tabla);
-        formData.append('columnaId', columnaId);
-        formData.append('valorId', valorId);
+        const formData = new FormData(); // Crear un nuevo objeto FormData para enviar datos al servidor
+        formData.append('accion', 'obtenerRegistro'); // Acción a realizar en el servidor
+        formData.append('tabla', tabla);    // Nombre de la tabla en la base de datos
+        formData.append('columnaId', columnaId); // Nombre de la columna que tiene el ID
+        formData.append('valorId', valorId);   // Valor del ID a buscar
 
-        const response = await fetch('/pizzeria/servicios/servicios.php', {
-            method: 'POST',
-            body: formData
+        const response = await fetch('/pizzeria/servicios/servicios.php', { // Realizar la petición al servidor
+            method: 'POST', // Método de la petición
+            body: formData // Datos a enviar al servidor
         });
 
-        if (!response.ok) {
-            throw new Error('Error en la respuesta del servidor');
+        if (!response.ok) { // Verificar si la respuesta del servidor es correcta
+            throw new Error('Error en la respuesta del servidor'); // Lanzar error si no es correcta
         }
 
         const resultado = await response.json();
@@ -107,6 +109,18 @@ export const obtenerRegistro = async (tabla, columnaId, valorId) => {
     }
 };
 
+// Función modular para obtener el ID de la fila seleccionada en DataTable
+export const obtenerIdFilaSeleccionada = (tablaId, campoId) => {
+    const tabla = $(`#${tablaId}`).DataTable();
+    const filaSeleccionada = tabla.row({ selected: true });
+
+    if (!filaSeleccionada.any()) {
+        return null;
+    }
+
+    const datosFila = filaSeleccionada.data();
+    return datosFila[campoId];
+};
 
 // funcion modular para agregar registro
 export const agregarRegistro = async (tabla, campos, valores) => {
@@ -158,7 +172,6 @@ export const modificarRegistro = async (tabla, columnaId, valorId, campos, valor
     }
 };
 
-
 // funcion modular para eliminar registro
 export const eliminarRegistro = async (tabla, columnaId, valorId) => {
     try {
@@ -183,9 +196,6 @@ export const eliminarRegistro = async (tabla, columnaId, valorId) => {
     }
 };
 
-
-
-
 // funcion modular para cargar grilla de datatables
 export const cargarGrillaMantenimiento = (idTablaHtml, tablaBD, columnasDB, columnasMostrar, join = '') => {
     if ($.fn.DataTable.isDataTable(`#${idTablaHtml}`)) {
@@ -204,7 +214,7 @@ export const cargarGrillaMantenimiento = (idTablaHtml, tablaBD, columnasDB, colu
 
 
         language: {
-            url: "/pizzeria/assets/js/datatables_es.json"
+            url: "/pizzeria/assets/json/datatables_es.json"
         },
         processing: true, // Muestra el indicador de carga
         serverSide: true, // Habilita el procesamiento del lado del servidor
@@ -265,3 +275,47 @@ export const cargarGrillaMantenimiento = (idTablaHtml, tablaBD, columnasDB, colu
     return dataTable;
 };
 
+// Función modular para abrir un modal de Bootstrap
+export const abrirModal = (modalId) => {
+    const modal = new bootstrap.Modal(document.getElementById(modalId));
+    modal.show();
+};
+
+// Función modular para cerrar un modal de Bootstrap
+export const cerrarModal = (modalId) => {
+    const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+    modal.hide();
+};
+
+// Función modular para limpiar un formulario
+export const limpiarFormulario = (formId) => {
+    document.getElementById(formId).reset();
+};
+
+// Funciones modulares para mostrar mensajes de éxito, error y advertencia con SweetAlert2
+export const mostrarMensajeExito = (mensaje) => {
+    swal.fire({
+        title: mensaje,
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false
+    });
+};
+
+export const mostrarMensajeError = (mensaje) => {
+    swal.fire({
+        title: "Error",
+        text: mensaje,
+        icon: "error",
+        confirmButtonText: "Aceptar"
+    });
+};
+
+export const mostrarMensajeAdvertencia = (mensaje) => {
+    swal.fire({
+        title: "Atención",
+        text: mensaje,
+        icon: "warning",
+        confirmButtonText: "Aceptar"
+    });
+};

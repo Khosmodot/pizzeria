@@ -1,6 +1,5 @@
 <!doctype html>
-<html lang="en" data-layout="horizontal" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg"
-    data-sidebar-image="none">
+<html lang="es">
 
 <head>
 
@@ -9,18 +8,15 @@
     <title>Mantenimiento Marcas</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Ícono de la página -->
-    <link rel="shortcut icon" href="../../../assets/images/pizza.png">
+    <!-- Ícono de la página -->
+    <link rel="shortcut icon" href="/pizzeria/assets/images/pizza.png">
     <!-- Bootstrap Css -->
-    <link href="../../../assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <!-- dataTables Css -->
-    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/select/2.0.3/css/select.bootstrap.css"> -->
-    <link rel="stylesheet" href="/pizzeria/assets/css/select.bootstrap.css">
-    <link href="../../../assets/css/dataTables.bootstrap5.css" rel="stylesheet" type="text/css" />
-    <!-- <link href="../../../assets/css/datatables.min.css" rel="stylesheet" type="text/css" /> -->
+    <link href="/pizzeria/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/pizzeria/assets/libs/dataTables/css/select.bootstrap.css">
+    <link href="/pizzeria/assets/libs/dataTables/css/dataTables.bootstrap5.css" rel="stylesheet" type="text/css" />
     <!-- Icons Css -->
-    <link href="../../../assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-    <!-- App Css-->
-    <link href="../../../assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <link href="/pizzeria/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    
 
     <link rel="stylesheet" href="/pizzeria/assets/css/stylesheet.css">
     <link rel="stylesheet" href="/pizzeria/assets/libs/sweetalert2/sweetalert2.min.css">
@@ -30,7 +26,6 @@
             display: none;
         }
     </style>
-    <script src="/pizzeria/assets/js/toastr.js"></script>
     <script type="module">
         import { verificarSesion } from '/pizzeria/assets/js/funciones.js';
         verificarSesion();
@@ -46,6 +41,7 @@
     <!-- ============================================================== -->
     <!-- Start right Content here -->
     <!-- ============================================================== -->
+    
     <div class="main-content">
 
         <div class="page-content">
@@ -59,8 +55,8 @@
 
                             <div class="page-title-right">
                                 <ol class="breadcrumb m-0">
-                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Mantenimiento</a></li>
-                                    <li class="breadcrumb-item active">Mantenimiento Marca</li>
+                                    <li class="breadcrumb-item">Mantenimiento</li> 
+                                    <li class="breadcrumb-item active">Marcas</li>
                                 </ol>
                             </div>
 
@@ -69,7 +65,7 @@
                 </div>
                 <!-- end page title -->
 
-                <div class="row">
+                <div class="row mt-2">
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-body">
@@ -202,7 +198,7 @@
         </div>
         <!-- End Page-content -->
 
-        t
+        
     </div>
     <!-- end main content-->
 
@@ -211,9 +207,10 @@
 
 
     <!-- Script para cargar el dataTables -->
-    <script src="/pizzeria/assets/js/dataTables.js"></script>
-    <script src="/pizzeria/assets/js/dataTables.select.js"></script>
-    <script src="/pizzeria/assets/js/dataTables.bootstrap5.js"></script>
+    <script src="/pizzeria/assets/libs/dataTables/js/dataTables.min.js"></script>
+    <script src="/pizzeria/assets/libs/dataTables/js/dataTables.select.js"></script>
+    <script src="/pizzeria/assets/libs/dataTables/js/dataTables.bootstrap5.js"></script>
+
     <script src="/pizzeria/assets/libs/sweetalert2/sweetalert2.min.js"></script>
 
 
@@ -226,9 +223,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             actualizarGrilla();
-            
-
-            
+                       
 
             // Evento para abrir el modal de modificación
             document.getElementById('botonModificar').addEventListener('click', abrirModalModificar);
