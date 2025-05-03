@@ -297,3 +297,92 @@ export const cargarGrillaMantenimiento = (idTablaHtml, tablaBD, columnasDB, colu
     return dataTable;
 };
 
+// funcion modular para cargar grilla de reportes datatables
+export const cargarGrillaReporte = (idTablaHtml, tablaBD, columnasDB, columnasMostrar, join = '') => {
+    if ($.fn.DataTable.isDataTable(`#${idTablaHtml}`)) {
+        $(`#${idTablaHtml}`).DataTable().destroy();
+    }
+
+    var dataTable = $(`#${idTablaHtml}`).DataTable({
+        select: {
+            style: 'single', // Selección única
+            info: false // Desactiva el mensaje de selección
+        },
+        lengthChange: false, // Desactiva el selector de cantidad de filas
+        language: {
+            url: "/pizzeria/assets/js/datatables_es.json"
+        },
+        processing: true, // Muestra el indicador de carga
+        serverSide: true, // Habilita el procesamiento del lado del servidor
+        ajax: {
+            url: "/pizzeria/servicios/servicios.php?accion=cargarGrilla",
+            type: "POST",
+            data: function (d) {
+                d.tabla = tablaBD;
+                d.columnasDB = JSON.stringify(columnasDB);
+                d.columnasMostrar = JSON.stringify(columnasMostrar);
+                d.join = join;
+            },
+            dataSrc: function (json) {
+                console.log(json); // Verifica la respuesta del servidor
+                return json.data;
+            },
+            error: function (xhr, error, thrown) {
+                console.error("Error en AJAX:", xhr.responseText);
+                toastr.error("Error al cargar los datos. Por favor, intente nuevamente.");
+            }
+        },
+        columns: columnasMostrar.map(col => ({
+            data: col.db,
+            searchable: col.searchable === true,
+            visible: col.visible !== false
+        })),
+        columnDefs: [
+            {
+                targets: '_all',
+                className: 'text-left dt-body-left dt-head-left',
+            }
+        ],
+        responsive: true,
+        dom: 'Bfrtip', // Activa los botones
+        buttons: [
+            // {
+            //     extend: 'copyHtml5',
+            //     text: 'Copiar',
+            //     className: 'btn btn-primary'
+            // },
+            {
+                extend: 'excelHtml5',
+                text: 'Exportar a Excel',
+                className: 'btn btn-success'
+            },
+            {
+                extend: 'pdfHtml5',
+                text: 'Exportar a PDF',
+                className: 'btn btn-danger',
+            },
+            {
+                extend: 'print',
+                text: 'Imprimir',
+                className: 'btn btn-info'
+            }
+        ],
+        fnDrawCallback: function () {
+            $('[data-toggle="tooltip"]').tooltip({
+                container: 'body',
+                html: true,
+                animation: true,
+                placement: "top"
+            });
+        }
+    });
+
+    $(`#${idTablaHtml}`).on('select.dt', function (e, dt, type, indexes) {
+        if (type === 'row') {
+            var data = dt.row(indexes).data();
+            console.log('Fila seleccionada:', data);
+        }
+    });
+
+    return dataTable;
+};
